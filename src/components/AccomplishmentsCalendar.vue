@@ -1,13 +1,17 @@
 <template>
-  <div class="calendar">
-    <!-- Check and display month name if it's the start of a new month -->
-    <div v-for="(day, index) in days" :key="index">
-      <div v-if="isNewMonth(day.date)" class="month-header">
-        {{ monthName(day.date) }}
-      </div>
-      <div class="day" :class="{ 'active': day.isActive }" @click="toggleDay(index)">
-        {{ day.date }}
-      </div>
+  <div class="max-w-screen-md mx-auto p-4">
+    <!-- Outer container with the grid setup for 7 columns -->
+    <div class="grid grid-cols-7 gap-2">
+      <template v-for="(day, index) in days" :key="index">
+        <!-- Month header only on the first day of the month, spanning full width -->
+        <div v-if="isNewMonth(day.date)" class="col-span-7 font-bold text-4xl text-center my-2">
+          {{ monthName(day.date) }}
+        </div>
+        <!-- Day boxes -->
+        <div :class="['bg-gray-400 p-3 text-center text-xl', {'bg-green-500 text-xl': day.isActive}]" @click="toggleDay(index)">
+          {{ day.day }}
+        </div>
+      </template>
     </div>
   </div>
 </template>
@@ -16,7 +20,8 @@
 import { ref, onMounted } from 'vue';
 
 interface Day {
-  date: string;
+  date: string; // Full date string for internal use
+  day: string;  // Day number for display
   isActive: boolean;
 }
 
@@ -46,9 +51,11 @@ const initializeDays = () => {
     for (let day = 1; day <= 31; day++) {
       let date = new Date(year, month, day);
       if (date.getMonth() === month) { // Check to ensure the date is valid
-        let localDate = formatDate(date);
+        let fullDate = formatDate(date);
+        let dayOnly = date.getDate().toString().padStart(2, '0');
         days.value.push({
-          date: localDate,
+          date: fullDate,
+          day: dayOnly,
           isActive: false
         });
       }
@@ -76,25 +83,3 @@ onMounted(() => {
   initializeDays();
 });
 </script>
-
-<style scoped>
-.calendar {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-}
-.month-header {
-  font-size: 20px;
-  font-weight: bold;
-  margin-top: 10px;
-}
-.day {
-  padding: 10px;
-  background-color: grey;
-  cursor: pointer;
-  text-align: center;
-}
-.day.active {
-  background-color: green;
-}
-</style>

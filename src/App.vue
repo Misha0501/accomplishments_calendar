@@ -4,7 +4,7 @@ import AccomplishmentsCalendar from '@/components/AccomplishmentsCalendar.vue'
 
 <template>
   <header>
-    <div class="wrapper bg-amber-200">
+    <div class="">
       <AccomplishmentsCalendar/>
     </div>
   </header>
