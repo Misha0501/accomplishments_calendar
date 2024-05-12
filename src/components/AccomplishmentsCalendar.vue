@@ -8,7 +8,7 @@
           {{ monthName(day.date) }}
         </div>
         <!-- Day boxes -->
-        <div :class="['bg-gray-400 p-3 text-center text-xl', {'bg-green-500 text-xl': day.isActive}]" @click="toggleDay(index)">
+        <div :class="['bg-gray-400 p-3 text-center text-xl', {'bg-green-500 text-xl': day.isActive}]" @click="toggleDay(day._id)">
           {{ day.day }}
         </div>
       </template>
@@ -18,8 +18,10 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
+import ApiService from '@/services/ApiService'
 
 interface Day {
+  _id: string; // Unique ID for the day
   date: string; // Full date string for internal use
   day: string;  // Day number for display
   isActive: boolean;
@@ -27,9 +29,13 @@ interface Day {
 
 const days = ref<Day[]>([]);
 
-// Toggles the active state of a day
-const toggleDay = (index: number) => {
-  days.value[index].isActive = !days.value[index].isActive;
+const fetchDays = async () => {
+  days.value = await ApiService.getDays();
+};
+
+const toggleDay = async (id: string) => {
+  await ApiService.toggleDay(id);
+  await fetchDays(); // Refresh the days list after toggling
 };
 
 // Check if it is the start of a new month
@@ -44,42 +50,5 @@ const monthName = (dateString: string) => {
   return date.toLocaleString('default', { month: 'long' });
 };
 
-// Initializes days array with all days of the current year
-const initializeDays = () => {
-  const year = new Date().getFullYear();
-  for (let month = 0; month < 12; month++) {
-    for (let day = 1; day <= 31; day++) {
-      let date = new Date(year, month, day);
-      if (date.getMonth() === month) { // Check to ensure the date is valid
-        let fullDate = formatDate(date);
-        let dayOnly = date.getDate().toString().padStart(2, '0');
-        days.value.push({
-          date: fullDate,
-          day: dayOnly,
-          isActive: false
-        });
-      }
-    }
-  }
-};
-
-// Format date to 'YYYY-MM-DD' as local date string
-const formatDate = (date: Date): string => {
-  let d = new Date(date);
-  let month = '' + (d.getMonth() + 1),
-    day = '' + d.getDate(),
-    year = d.getFullYear();
-
-  if (month.length < 2)
-    month = '0' + month;
-  if (day.length < 2)
-    day = '0' + day;
-
-  return [year, month, day].join('-');
-};
-
-// Initialize days on component mount
-onMounted(() => {
-  initializeDays();
-});
+onMounted(fetchDays);
 </script>
