@@ -14,7 +14,7 @@ class ApiService {
     return response.data.days;
   }
 
-  static async togglexDay(id: string): Promise<void> {
+  static async toggleDay(id: string): Promise<void> {
     await axios.post(`${API_URL}/toggle`, { _id : id });
   }
 }
