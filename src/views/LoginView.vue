@@ -1,70 +1,71 @@
 <template>
   <v-container>
-    <v-card class="mx-auto my-12" max-width="500">
+    <v-card class="mx-auto my-12" max-width="400">
       <v-card-title class="text-h5">Login</v-card-title>
       <v-card-text>
-        <!-- Error Alert -->
-        <v-alert v-if="errorMessage" type="error" dismissible @input="errorMessage = ''">
+        <v-alert v-if="errorMessage" type="error" dismissible>
           {{ errorMessage }}
         </v-alert>
-
-        <v-form @submit.prevent="handleLogin" ref="form">
+        <v-form v-model="isValid" ref="form" @submit.prevent="handleLogin">
           <v-text-field
             label="Email"
             v-model="loginForm.email"
-            required
             type="email"
             :rules="[rules.required, rules.validEmail]"
+            required
+            outlined
+            dense
           ></v-text-field>
           <v-text-field
             label="Password"
             v-model="loginForm.password"
-            required
-            type="password"
             :rules="[rules.required]"
+            type="password"
+            required
+            outlined
+            dense
           ></v-text-field>
-          <v-btn type="submit" color="primary" block>Login</v-btn>
+          <v-btn :disabled="!isValid" type="submit" color="primary" block>Login</v-btn>
         </v-form>
       </v-card-text>
       <v-card-actions>
-        <v-btn text @click="goToRegister">Register Instead</v-btn>
+        <v-btn @click="goToRegister">Register Instead</v-btn>
       </v-card-actions>
     </v-card>
   </v-container>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, reactive } from 'vue';
 import axios from 'axios';
 import { useRouter } from 'vue-router';
 
 const router = useRouter();
 const form = ref(null);
-
-const loginForm = ref({
+const isValid = ref(false);
+const loginForm = reactive({
   email: '',
   password: ''
 });
 const errorMessage = ref('');
 
 const rules = {
-  required: (value: string) => !!value || 'Required.',
-  validEmail: (value: string) => /.+@.+\..+/.test(value) || 'E-mail must be valid',
+  required: value => !!value || 'This field is required.',
+  validEmail: value => /.+@.+\..+/.test(value) || 'E-mail must be valid'
 };
 
 const handleLogin = async () => {
-  if (form.value?.validate()) {
+  if (isValid.value && form.value?.validate()) {
     try {
-      const response = await axios.post('/auth/login', loginForm.value);
-      console.log('Login successful:', response.data);
-      localStorage.setItem('authToken', response.data.token);
-      router.replace({ name: 'Home' });
+      const response = await axios.post('/auth/login', loginForm);
+      console.log("Login successful:", response.data);
+      localStorage.setItem('authToken', response.data.token);  // Save the token
+      router.push({ name: 'Home' });  // Redirect to home or dashboard
     } catch (error) {
       if (axios.isAxiosError(error) && error.response) {
-        // Here you might want to handle different kinds of errors differently
-        errorMessage.value = error.response.data.message || 'Failed to login. Please try again.';
+        errorMessage.value = "Login failed: " + (error.response.data.message || "Incorrect credentials");
       } else {
-        errorMessage.value = 'Login failed due to unexpected issues. Please try again later.';
+        errorMessage.value = "An unexpected error occurred. Please try again later.";
       }
     }
   }
@@ -73,4 +74,5 @@ const handleLogin = async () => {
 const goToRegister = () => {
   router.push({ name: 'Register' });
 };
+
 </script>
