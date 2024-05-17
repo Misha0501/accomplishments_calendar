@@ -1,19 +1,24 @@
 <template>
-  <div class="max-w-screen-md mx-auto p-4">
-    <!-- Outer container with the grid setup for 7 columns -->
-    <div class="grid grid-cols-7 gap-2">
-      <template v-for="(day, index) in days" :key="index">
-        <!-- Month header only on the first day of the month, spanning full width -->
-        <div v-if="isNewMonth(day.date)" class="col-span-7 font-bold text-4xl text-center my-2">
-          {{ monthName(day.date) }}
-        </div>
-        <!-- Day boxes -->
-        <div :class="['bg-gray-400 p-3 text-center text-xl', {'bg-green-500 text-xl': day.isActive}]" @click="toggleDay(day._id)">
-          {{ day.day }}
-        </div>
-      </template>
+  <v-container class="max-w-screen-md mx-auto p-4">
+    <div v-if="accomplishmentName" class="text-h5 text-center my-4">
+      {{ accomplishmentName }}
     </div>
-  </div>
+    <!-- Outer container with Vuetify's grid setup -->
+    <v-row>
+      <template v-for="(day, index) in days" :key="index">
+        <!-- Month header only on the first day of the month, using Vuetify's grid -->
+        <v-col v-if="isNewMonth(day.date)" cols="12" class="text-h4 text-center my-2">
+          {{ monthName(day.date) }}
+        </v-col>
+        <!-- Day boxes -->
+        <v-col cols="1">
+          <v-btn :color="day.isActive ? 'green' : 'grey lighten-1'" block text @click="toggleDay(day._id)">
+            {{ day.day }}
+          </v-btn>
+        </v-col>
+      </template>
+    </v-row>
+  </v-container>
 </template>
 
 <script setup lang="ts">
@@ -26,6 +31,11 @@ interface Day {
   day: string;  // Day number for display
   isActive: boolean;
 }
+
+const props = defineProps({
+  accomplishmentName: String
+});
+
 
 const days = ref<Day[]>([]);
 
