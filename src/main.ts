@@ -11,6 +11,7 @@ import { createPinia } from 'pinia'
 
 import App from './App.vue'
 import router from './router'
+import axios from 'axios'
 
 const vuetify = createVuetify({
   components,
@@ -18,6 +19,8 @@ const vuetify = createVuetify({
 })
 
 const app = createApp(App)
+
+axios.defaults.baseURL = 'http://localhost:3000'; // API base URL
 
 app.use(createPinia())
 app.use(router)
