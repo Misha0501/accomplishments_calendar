@@ -40,7 +40,6 @@
     "eslint-plugin-vue": "^9.23.0",
     "jsdom": "^24.0.0",
     "npm-run-all2": "^6.1.2",
-    "postcss": "^8.4.38",
     "prettier": "^3.2.5",
     "start-server-and-test": "^2.0.3",
     "typescript": "~5.4.0",

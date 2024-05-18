@@ -16,25 +16,7 @@
 
 
 <script setup>
-import { ref } from 'vue';
 
-const showLoginDialog = ref(false);
-const loginForm = ref({
-  email: '',
-  password: ''
-});
-
-const handleLogin = () => {
-  console.log('Logging in:', loginForm.value);
-  // Implement login logic here
-  showLoginDialog.value = false;
-};
-
-const handleRegister = () => {
-  console.log('Registering:', loginForm.value);
-  // Implement registration logic here
-  showLoginDialog.value = false;
-};
 </script>
 
 <style>
