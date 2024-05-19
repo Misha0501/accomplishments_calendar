@@ -6,8 +6,8 @@ import {
   signOut,
   onAuthStateChanged,
 } from 'firebase/auth';
-import { type IAuthService } from '@/interfaces/IAuthService';
-import { type ApplicationUser } from '@/interfaces/IApplicationUser';
+import type { IAuthService } from '@/interfaces/IAuthService';
+import type { ApplicationUser } from '@/types/ApplicationUser';
 
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,

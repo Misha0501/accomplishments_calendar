@@ -12,7 +12,7 @@
 import { ref, onMounted, inject } from 'vue';
 import { useRouter } from 'vue-router';
 import type { IAuthService } from '@/interfaces/IAuthService';
-import type { ApplicationUser } from '@/interfaces/IApplicationUser';
+import type { ApplicationUser } from '@/types/ApplicationUser';
 
 const router = useRouter();
 const authService = inject<IAuthService>('authService');

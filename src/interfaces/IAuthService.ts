@@ -1,4 +1,4 @@
-import { type ApplicationUser } from './IApplicationUser';
+import type { ApplicationUser } from '@/types/ApplicationUser';
 
 export interface IAuthService {
   login(email: string, password: string): Promise<ApplicationUser | null>;
