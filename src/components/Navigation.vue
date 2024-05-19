@@ -9,20 +9,23 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from 'vue';
+import { ref, onMounted, inject } from 'vue';
 import { useRouter } from 'vue-router';
-import { auth } from '@/config/firebase';
-import { User } from 'firebase/auth';
+import type { IAuthService } from '@/interfaces/IAuthService';
+import type { ApplicationUser } from '@/interfaces/IApplicationUser';
 
 const router = useRouter();
-const user = ref<User | null>(null);
+const authService = inject<IAuthService>('authService');
+const user = ref<ApplicationUser | null>(null);
 
-const updateUser = () => {
-  user.value = auth.currentUser;
+const updateUser = (currentUser: ApplicationUser | null) => {
+  user.value = currentUser;
 };
 
 // Watch for authentication state changes
-auth.onAuthStateChanged(updateUser);
+onMounted(() => {
+  authService?.onAuthStateChanged(updateUser);
+});
 
 // Navigate to profile page
 const goToProfile = () => {
@@ -37,8 +40,8 @@ const goToAuth = () => {
 // Logout function
 const logout = async () => {
   try {
-    await auth.signOut();
-    updateUser();
+    await authService?.logout();
+    updateUser(null);
     router.push({ name: 'Home' });
   } catch (error) {
     console.error('Error signing out:', error);
