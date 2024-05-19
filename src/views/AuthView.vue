@@ -9,9 +9,9 @@
   </v-container>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { onMounted } from 'vue';
-import { ui, uiConfig } from '../config/firebaseui';
+import { ui, uiConfig } from '@/config/firebaseui';
 
 onMounted(() => {
   ui.start('#firebaseui-auth-container', uiConfig);
