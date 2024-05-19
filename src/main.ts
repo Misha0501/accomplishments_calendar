@@ -8,22 +8,31 @@ import './assets/main.css'
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
 
-
 import App from './App.vue'
 import router from './router'
 import axios from 'axios'
+import { auth } from '@/config/firebase'
 
 const vuetify = createVuetify({
   components,
   directives,
 })
 
-const app = createApp(App)
+let app;
 
-axios.defaults.baseURL = 'http://localhost:3000'; // API base URL
+auth.onAuthStateChanged(user => {
+  if (!app) {
+    app = createApp(App);
+    app.use(createPinia())
+    app.use(router);
+    app.use(vuetify);
+    app.mount('#app');
+    axios.defaults.baseURL = 'http://localhost:3000'; // API base URL
+  }
 
-app.use(createPinia())
-app.use(router)
-app.use(vuetify)
-
-app.mount('#app')
+  if (user) {
+    console.log('User signed in:', user);
+  } else {
+    console.log('No user signed in');
+  }
+});
