@@ -1,11 +1,11 @@
-import { createRouter, createWebHistory } from 'vue-router';
-import HomeView from '../views/HomeView.vue';
-import LoginView from '../views/LoginView.vue';
-import RegisterView from '../views/RegisterView.vue';
+import { createRouter, createWebHistory } from 'vue-router'
+import HomeView from '../views/HomeView.vue'
+import LoginView from '../views/LoginView.vue'
+import RegisterView from '../views/RegisterView.vue'
 import CalendarsView from '../views/CalendarsView.vue'
 import AuthView from '../views/AuthView.vue'
-import { auth } from '@/config/firebase'
 import ProfileView from '@/views/ProfileView.vue'
+import authService from '@/services/authService'
 
 const routes = [
   {
@@ -33,12 +33,17 @@ const router = createRouter({
   routes
 });
 
-router.beforeEach((to, from, next) => {
-  const requiresAuth = to.matched.some(record => record.meta.requiresAuth);
-  const isAuthenticated = !!auth.currentUser;
+router.beforeEach(async (to, from, next) => {
+  // Wait for the auth state to be resolved
+  await authService.getAuthState();
 
-  if (requiresAuth && !isAuthenticated) {
-    next('/auth');
+  if (to.matched.some(record => record.meta.requiresAuth)) {
+    // Check if the user is authenticated
+    if (!authService.isAuthenticated()) {
+      next({ name: 'Auth' });
+    } else {
+      next();
+    }
   } else {
     next();
   }

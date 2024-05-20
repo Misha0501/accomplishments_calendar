@@ -1,5 +1,5 @@
-import type { ApplicationUser } from '@/types/ApplicationUser';
-import type { IAuthService } from '@/interfaces/IAuthService';
+import { type ApplicationUser } from '@/types/ApplicationUser';
+import { type IAuthService } from '@/interfaces/IAuthService';
 
 class MockAuthService implements IAuthService {
   private currentUser: ApplicationUser | null = null;
