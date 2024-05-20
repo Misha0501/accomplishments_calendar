@@ -29,7 +29,7 @@ onMounted(() => {
 
 // Navigate to profile page
 const goToProfile = () => {
-  router.push({ name: 'Profile' });
+  router.push({ name: 'ProfileInfo' });
 };
 
 // Navigate to authentication page
