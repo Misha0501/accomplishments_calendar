@@ -6,4 +6,6 @@ export interface IAuthService {
   logout(): Promise<void>;
   onAuthStateChanged(callback: (user: ApplicationUser | null) => void): void;
   getCurrentUser(): ApplicationUser | null;
+  getAuthState(): Promise<void>;
+  isAuthenticated(): boolean
 }

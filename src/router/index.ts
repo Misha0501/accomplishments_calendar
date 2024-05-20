@@ -5,7 +5,8 @@ import RegisterView from '../views/RegisterView.vue'
 import CalendarsView from '../views/CalendarsView.vue'
 import AuthView from '../views/AuthView.vue'
 import ProfileView from '@/views/ProfileView.vue'
-import authService from '@/services/authService'
+import { inject } from 'vue';
+import type { IAuthService } from '@/interfaces/IAuthService'
 
 const routes = [
   {
@@ -33,7 +34,14 @@ const router = createRouter({
   routes
 });
 
+// Use a function to inject the authService
+const getAuthService = (): IAuthService => {
+  return inject<IAuthService>('authService') as IAuthService;
+};
+
 router.beforeEach(async (to, from, next) => {
+  const authService = getAuthService();
+
   // Wait for the auth state to be resolved
   await authService.getAuthState();
 

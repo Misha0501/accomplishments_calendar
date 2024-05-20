@@ -11,7 +11,7 @@ import { createPinia } from 'pinia';
 import App from './App.vue';
 import router from './router';
 import axios from 'axios';
-import authService from '@/services/authService';
+import AuthService from '@/services/authService'
 
 const vuetify = createVuetify({
   components,
@@ -23,6 +23,9 @@ const app = createApp(App);
 app.use(createPinia());
 app.use(router);
 app.use(vuetify);
+
+// Create an instance of AuthService
+const authService = new AuthService("some argumentttt");
 
 // Provide the authService
 app.provide('authService', authService);

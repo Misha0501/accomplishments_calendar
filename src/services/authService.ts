@@ -6,7 +6,6 @@ import {
   createUserWithEmailAndPassword,
   signOut,
   onAuthStateChanged,
-  type User
 } from 'firebase/auth';
 import { type IAuthService } from '@/interfaces/IAuthService';
 import { type ApplicationUser } from '@/types/ApplicationUser';
@@ -75,6 +74,4 @@ class AuthService implements IAuthService {
   }
 }
 
-const authService = new AuthService();
-export default authService;
-export type { ApplicationUser };
+export default AuthService;
