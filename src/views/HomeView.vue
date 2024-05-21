@@ -1,30 +1,17 @@
 <template>
   <v-container class="max-w-screen-md mx-auto p-4">
-    <div v-if="calendarName" class="text-h5 text-center my-4">
-      {{ calendarName }}
-    </div>
-    <!-- Outer container with Vuetify's grid setup -->
-    <v-row>
-      <template v-for="(day, index) in days" :key="index">
-        <!-- Month header only on the first day of the month, using Vuetify's grid -->
-        <v-col v-if="isNewMonth(day.date)" cols="12" class="text-h4 text-center my-2">
-          {{ monthName(day.date) }}
-        </v-col>
-        <!-- Day boxes -->
-        <v-col cols="1">
-          <v-btn :color="day.isActive ? 'green' : 'grey lighten-1'" block text @click="toggleDay(day._id)">
-            {{ day.day }}
-          </v-btn>
-        </v-col>
-      </template>
-    </v-row>
+    <CalendarComponent
+      :initialDays="days"
+      :initialCalendarName="calendarName"
+      :fetchDaysFn="fetchDays"
+      :toggleDayFn="toggleDay"
+    />
     <!-- Button to register -->
     <v-row>
       <v-col cols="12" class="text-center">
         <v-btn @click="goToRegister">Register</v-btn>
       </v-col>
     </v-row>
-
     <!-- Dialog for setting calendar name -->
     <v-dialog v-model="dialog" persistent max-width="600px">
       <v-card>
@@ -52,6 +39,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
+import CalendarComponent from '@/components/CalendarComponent.vue';
 
 interface Day {
   _id: string;
@@ -127,18 +115,12 @@ function checkCalendarName() {
   }
 }
 
-function isNewMonth(dateString: string) {
-  const date = new Date(dateString);
-  return date.getDate() === 1;
-}
-
-function monthName(dateString: string) {
-  const date = new Date(dateString);
-  return date.toLocaleString('default', { month: 'long' });
+function fetchDays() {
+  loadDaysFromLocalStorage();
+  return { days: days.value, calendarName: calendarName.value };
 }
 
 onMounted(() => {
-  loadDaysFromLocalStorage();
   checkCalendarName();
 });
 </script>
