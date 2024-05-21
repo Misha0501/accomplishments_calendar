@@ -2,7 +2,7 @@
   <v-container class="max-w-screen-md mx-auto p-4">
     <CalendarComponent
       :initialDays="days"
-      :initialCalendarName="calendarName"
+      :initialCalendarName="calendarName ?? ''"
       :fetchDaysFn="fetchDays"
       :toggleDayFn="toggleDay"
     />

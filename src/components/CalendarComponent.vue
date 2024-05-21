@@ -1,7 +1,7 @@
 <template>
   <v-container class="max-w-screen-md mx-auto p-4">
-    <div v-if="calendarName" class="text-h5 text-center my-4">
-      {{ calendarName }}
+    <div class="text-h5 text-center my-4">
+      {{ calendarName ?? props.initialCalendarName }}
     </div>
     <!-- Outer container with Vuetify's grid setup -->
     <v-row>
@@ -12,7 +12,7 @@
         </v-col>
         <!-- Day boxes -->
         <v-col cols="1">
-          <v-btn :color="day.isActive ? 'green' : 'grey lighten-1'" block text @click="toggleDay(day._id)">
+          <v-btn :color="day.isActive ? 'green' : 'grey lighten-1'" block text @click="() => toggleDay(day._id)">
             {{ day.day }}
           </v-btn>
         </v-col>
@@ -22,7 +22,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, watch } from 'vue';
+import { ref, watch } from 'vue';
 
 interface Day {
   _id: string;
@@ -38,7 +38,7 @@ const props = defineProps({
   },
   initialCalendarName: {
     type: String,
-    default: null
+    default: 'sdsdfsdfds'
   },
   fetchDaysFn: {
     type: Function,
@@ -59,6 +59,7 @@ watch(() => props.initialDays, (newDays) => {
 
 watch(() => props.initialCalendarName, (newName) => {
   calendarName.value = newName;
+  console.log("New calendar name:", newName);
 });
 
 async function fetchDays() {
@@ -86,5 +87,5 @@ function monthName(dateString: string) {
   return date.toLocaleString('default', { month: 'long' });
 }
 
-onMounted(fetchDays);
+fetchDays(); // Ensure fetchDays is called immediately
 </script>
