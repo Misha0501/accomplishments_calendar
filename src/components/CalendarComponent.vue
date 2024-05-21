@@ -38,7 +38,7 @@ const props = defineProps({
   },
   initialCalendarName: {
     type: String,
-    default: 'sdsdfsdfds'
+    default: ''
   },
   fetchDaysFn: {
     type: Function,

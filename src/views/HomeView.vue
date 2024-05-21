@@ -21,7 +21,7 @@
         <v-card-text>
           <v-form ref="form">
             <v-text-field
-              v-model="calendarName"
+              v-model="inputCalendarName"
               label="Calendar Name"
               required
             ></v-text-field>
@@ -40,7 +40,7 @@
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import CalendarComponent from '@/components/CalendarComponent.vue';
-import { formatDate } from '@/utils/dateUtils';
+import { formatDate } from '@/utils/dateUtils'; // Assume you have a utility function for formatting dates
 
 interface Day {
   _id: string;
@@ -51,6 +51,7 @@ interface Day {
 
 const days = ref<Day[]>([]);
 const calendarName = ref<string | null>(null);
+const inputCalendarName = ref<string | null>(null); // New ref for input field
 const dialog = ref<boolean>(false);
 const form = ref(null);
 const router = useRouter();
@@ -104,7 +105,8 @@ function goToRegister() {
 
 function saveCalendarName() {
   if (form.value.validate()) {
-    localStorage.setItem('calendarName', calendarName.value as string);
+    localStorage.setItem('calendarName', inputCalendarName.value as string);
+    calendarName.value = inputCalendarName.value; // Update calendarName after saving
     dialog.value = false;
   }
 }
