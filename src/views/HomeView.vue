@@ -40,6 +40,7 @@
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import CalendarComponent from '@/components/CalendarComponent.vue';
+import { formatDate } from '@/utils/dateUtils';
 
 interface Day {
   _id: string;
@@ -74,10 +75,12 @@ function initializeDays() {
     for (let day = 1; day <= 31; day++) {
       const date = new Date(year, month, day);
       if (date.getMonth() === month) {
+        const formattedDate = formatDate(date);
+        const dayOnly = date.getDate().toString().padStart(2, '0');
         newDays.push({
-          _id: `${year}-${month + 1}-${day}`,
-          date: date.toISOString().split('T')[0],
-          day: day.toString().padStart(2, '0'),
+          _id: `${year}-${(month + 1).toString().padStart(2, '0')}-${dayOnly}`,
+          date: formattedDate,
+          day: dayOnly,
           isActive: false
         });
       }
