@@ -25,7 +25,7 @@ app.use(router);
 app.use(vuetify);
 
 // Create an instance of AuthService
-const authService = new AuthService("some argumentttt");
+const authService = new AuthService();
 
 // Provide the authService
 app.provide('authService', authService);
