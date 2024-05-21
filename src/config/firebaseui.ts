@@ -5,20 +5,32 @@ import { auth } from './firebase'
 import axios from 'axios'
 
 // Function to transfer calendar data from localStorage to the backend
-async function transferCalendarData(user: firebase.User): Promise<void> {
+async function transferCalendarData(user: firebase.User): Promise<string | null> {
   const localStorageData = localStorage.getItem('unregisteredCalendar')
-  if (localStorageData) {
+  const calendarName = localStorage.getItem('calendarName')
+
+  if (localStorageData && calendarName) {
     const calendarData = JSON.parse(localStorageData)
     const token = await user.getIdToken()
 
-    await axios.post('/api/users/register', { calendarData }, {
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
-    })
+    try {
+      const response = await axios.post('/api/users/register', { calendarData, calendarName }, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      })
 
-    localStorage.removeItem('unregisteredCalendar')
+      localStorage.removeItem('unregisteredCalendar')
+      localStorage.removeItem('calendarName')
+
+      return response.data.calendarId // Assuming backend returns the new calendar ID
+    } catch (error) {
+      console.error('Failed to transfer calendar data:', error)
+      throw error
+    }
   }
+
+  return null
 }
 
 // Custom FirebaseUI configuration
@@ -40,18 +52,23 @@ const uiConfig: firebaseui.auth.Config = {
     signInSuccessWithAuthResult: (authResult) => {
       const user = authResult.user
       if (user) {
-        transferCalendarData(user).then(() => {
-          // Redirect to home page
-          window.location.href = '/'
-        }).catch(
-          (error) => {
-            console.error('Failed to transfer calendar data:', error)
-            return Promise.reject(error)
+        transferCalendarData(user).then((calendarId) => {
+          if (calendarId) {
+            // Redirect to the newly created calendar
+            window.location.href = `/calendar/${calendarId}`
+          } else {
+            window.location.href = '/'
           }
-        )
+        }).catch((error) => {
+          console.error('Failed to transfer calendar data:', error)
+          window.location.href = '/'
+        })
+        return false // Prevents the redirect automatically
+      } else {
+        return true
       }
-      return false // Prevents the redirect automatically
     }
+
   },
   tosUrl: '', // URL for Terms of Service
   privacyPolicyUrl: '' // URL for Privacy Policy
