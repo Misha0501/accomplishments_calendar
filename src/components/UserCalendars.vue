@@ -10,7 +10,7 @@
           @click="showDialog"
           style="height: 116px; cursor: pointer;"
         >
-          <Plus/>
+          <Plus />
         </v-card>
       </v-col>
 
@@ -58,22 +58,22 @@
   </v-container>
 </template>
 
-<script setup>
-import Plus from '@/components/icons/Plus.vue'
-import { onMounted, ref } from 'vue';
+<script setup lang="ts">
+import Plus from '@/components/icons/Plus.vue';
+import { onMounted, ref, inject } from 'vue';
 import { useRouter } from 'vue-router';
 import axios from 'axios';
-import { getAuth } from 'firebase/auth';
+import type { IAuthService } from '@/interfaces/IAuthService';
 
 const router = useRouter();
 const calendars = ref([]);
 const dialog = ref(false);
 const newCalendarName = ref('');
 const form = ref(null);
+const authService = inject<IAuthService>('authService');
 
 async function fetchCalendars() {
-  const auth = getAuth();
-  const user = auth.currentUser;
+  const user = authService?.getCurrentUser();
 
   if (user) {
     try {
@@ -109,8 +109,7 @@ async function submitForm() {
 }
 
 async function createNewCalendar() {
-  const auth = getAuth();
-  const user = auth.currentUser;
+  const user = authService?.getCurrentUser();
 
   if (user) {
     try {
@@ -125,6 +124,7 @@ async function createNewCalendar() {
       const newCalendar = response.data.calendar;
       calendars.value.push(newCalendar);
       console.log("New calendar created:", newCalendar);
+      router.push({ name: 'CalendarView', params: { id: newCalendar._id } });
     } catch (error) {
       console.error("Error creating calendar:", error);
     }
