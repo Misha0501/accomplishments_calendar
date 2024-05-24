@@ -8,9 +8,9 @@
           outlined
           elevation="2"
           @click="showDialog"
-          style="height: 200px; cursor: pointer;"
+          style="height: 116px; cursor: pointer;"
         >
-          <v-icon size="56">mdi-plus</v-icon>
+          <Plus/>
         </v-card>
       </v-col>
 
@@ -59,6 +59,7 @@
 </template>
 
 <script setup>
+import Plus from '@/components/icons/Plus.vue'
 import { onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import axios from 'axios';
