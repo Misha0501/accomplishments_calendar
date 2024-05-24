@@ -11,7 +11,7 @@ import ProfileInfo from '@/components/ProfileInfo.vue'
 const routes = [
   {
     path: '/',
-    name: 'home',
+    name: 'Home',
     component: HomeView
   },
   {
