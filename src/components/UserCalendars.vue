@@ -50,8 +50,8 @@
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn color="blue darken-1" text @click="closeDialog">Cancel</v-btn>
-          <v-btn color="blue darken-1" text @click="submitForm">Create</v-btn>
+          <v-btn color="blue darken-1" @click="closeDialog">Cancel</v-btn>
+          <v-btn color="blue darken-1" @click="submitForm">Create</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -64,9 +64,10 @@ import { onMounted, ref, inject } from 'vue';
 import { useRouter } from 'vue-router';
 import axios from 'axios';
 import type { IAuthService } from '@/interfaces/IAuthService';
+import type { Calendar } from '@/types/Calendar';
 
 const router = useRouter();
-const calendars = ref([]);
+const calendars = ref<Calendar[]>([]);
 const dialog = ref(false);
 const newCalendarName = ref('');
 const form = ref(null);
@@ -78,7 +79,7 @@ async function fetchCalendars() {
   if (user) {
     try {
       const token = await user.getIdToken();
-      const response = await axios.get('/api/calendars/user', {
+      const response = await axios.get<Calendar[]>('/api/calendars/user', {
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -114,7 +115,7 @@ async function createNewCalendar() {
   if (user) {
     try {
       const token = await user.getIdToken();
-      const response = await axios.post('/api/calendars/create', {
+      const response = await axios.post<{ calendar: Calendar }>('/api/calendars/create', {
         name: newCalendarName.value
       }, {
         headers: {
@@ -133,7 +134,7 @@ async function createNewCalendar() {
   }
 }
 
-function goToCalendar(calendarId) {
+function goToCalendar(calendarId: string) {
   router.push({ name: 'CalendarView', params: { id: calendarId } });
 }
 

@@ -49,7 +49,7 @@ import CalendarComponent from '@/components/CalendarComponent.vue';
 import { formatDate } from '@/utils/dateUtils';
 import type { IAuthService } from '@/interfaces/IAuthService';
 import type { ApplicationUser } from '@/types/ApplicationUser';
-import type { Day } from '@/types';
+import type { Day } from '@/types/Day';
 
 const days = ref<Day[]>([]);
 const calendarName = ref<string | null>(null);
