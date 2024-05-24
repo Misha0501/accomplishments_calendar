@@ -10,31 +10,25 @@
   </v-container>
 </template>
 
-<script setup>
-import { onMounted, ref } from 'vue';
-import axios from 'axios';
-import { getAuth } from 'firebase/auth';
+<script setup lang="ts">
+import { ref, onMounted, inject } from 'vue';
+import type { IAuthService } from '@/interfaces/IAuthService';
+import type { ApplicationUser } from '@/types/ApplicationUser';
 
 const profile = ref({ email: '', name: '' });
+const authService = inject<IAuthService>('authService');
 
 async function fetchUserProfile() {
-  const auth = getAuth();
-  const user = auth.currentUser;
-
-  if (user) {
-    try {
-      const token = await user.getIdToken();
-      const response = await axios.get('/api/user/profile', {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
-      profile.value = response.data;
-    } catch (error) {
-      console.error("Error fetching user profile:", error);
+  if (authService) {
+    const user: ApplicationUser | null = authService.getCurrentUser();
+    if (user) {
+      profile.value.email = user.email || 'N/A';
+      profile.value.name = user.displayName || 'N/A';
+    } else {
+      console.error("User is not authenticated");
     }
   } else {
-    console.error("User is not authenticated");
+    console.error("AuthService is not available");
   }
 }
 
