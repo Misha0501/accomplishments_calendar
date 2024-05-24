@@ -7,8 +7,6 @@
           v-model="drawer"
           app
           permanent
-          hide-overlay
-          class="v-navigation-drawer--close"
         >
           <v-list dense>
             <v-list-item-group v-model="selectedItem">
@@ -16,6 +14,7 @@
                 v-for="(item, index) in items"
                 :key="index"
                 @click="navigateTo(item.route)"
+                :value="index"
               >
                 <v-list-item-content>
                   <v-list-item-title>{{ item.title }}</v-list-item-title>
@@ -40,6 +39,7 @@
               v-for="(item, index) in items"
               :key="index"
               @click="navigateTo(item.route)"
+              :value="index"
             >
               {{ item.title }}
             </v-tab>
@@ -54,11 +54,12 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
-import { useRouter } from 'vue-router';
+import { ref, watch } from 'vue';
+import { useRouter, useRoute } from 'vue-router';
 import { getAuth } from 'firebase/auth';
 
 const router = useRouter();
+const route = useRoute();
 
 const items = [
   { title: 'Profile', route: '/profile/info' },
@@ -82,11 +83,20 @@ const logout = async () => {
   await auth.signOut();
   router.push('/');
 };
+
+// Watch for route changes to update the selectedItem
+watch(
+  () => route.path,
+  (newPath) => {
+    const item = items.find((item) => item.route === newPath);
+    selectedItem.value = items.indexOf(item);
+  },
+  { immediate: true }
+);
 </script>
 
 <style>
 .v-main {
   padding-left: 0;
 }
-
 </style>
