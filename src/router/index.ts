@@ -67,6 +67,9 @@ router.beforeEach(async (to, from, next) => {
     } else {
       next();
     }
+  } else if (to.name === 'Auth' && authService.isAuthenticated()) {
+    // Redirect authenticated users away from the auth page
+    next({ name: 'Home' });
   } else {
     next();
   }
