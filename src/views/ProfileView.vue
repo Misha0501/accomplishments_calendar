@@ -85,10 +85,6 @@ const logout = async () => {
 </script>
 
 <style>
-.v-navigation-drawer {
-  height: 100vh;
-}
-
 .v-main {
   padding-left: 0;
 }
