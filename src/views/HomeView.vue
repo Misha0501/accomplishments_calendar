@@ -6,30 +6,35 @@
       :fetchDaysFn="fetchDays"
       :toggleDayFn="toggleDay"
     />
-    <!-- Button to register -->
-    <v-row>
-      <v-col cols="12" class="text-center">
-        <v-btn @click="goToRegister">Register</v-btn>
-      </v-col>
-    </v-row>
     <!-- Dialog for setting calendar name -->
     <v-dialog v-model="dialog" persistent max-width="600px">
       <v-card>
         <v-card-title>
-          <span class="headline">Set Calendar Name</span>
+          <span class="headline">Create new calendar</span>
         </v-card-title>
         <v-card-text>
           <v-form ref="form">
             <v-text-field
               v-model="inputCalendarName"
+              :rules="[v => !!v || 'Calendar Name is required']"
               label="Calendar Name"
               required
+              :error-messages="calendarNameErrorMessages"
+              @input="clearError"
             ></v-text-field>
           </v-form>
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn color="blue darken-1" text @click="saveCalendarName">Save</v-btn>
+          <v-btn color="blue darken-1" @click="saveCalendarName">Save</v-btn>
+        </v-card-actions>
+        <v-card-actions v-if="!isAuthenticated">
+          <v-spacer></v-spacer>
+          <v-btn color="green darken-1" @click="goToRegister">Login/Register</v-btn>
+        </v-card-actions>
+        <v-card-actions v-if="isAuthenticated">
+          <v-spacer></v-spacer>
+          <v-btn color="blue darken-1" @click="viewCalendars">View Calendars</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -37,24 +42,24 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, inject } from 'vue';
 import { useRouter } from 'vue-router';
+import axios from 'axios';
 import CalendarComponent from '@/components/CalendarComponent.vue';
-import { formatDate } from '@/utils/dateUtils'; // Assume you have a utility function for formatting dates
-
-interface Day {
-  _id: string;
-  date: string;
-  day: string;
-  isActive: boolean;
-}
+import { formatDate } from '@/utils/dateUtils';
+import type { IAuthService } from '@/interfaces/IAuthService';
+import type { ApplicationUser } from '@/types/ApplicationUser';
+import type { Day } from '@/types';
 
 const days = ref<Day[]>([]);
 const calendarName = ref<string | null>(null);
-const inputCalendarName = ref<string | null>(null); // New ref for input field
+const inputCalendarName = ref<string | null>(null);
 const dialog = ref<boolean>(false);
 const form = ref(null);
+const calendarNameErrorMessages = ref<string[]>([]);
 const router = useRouter();
+const authService = inject<IAuthService>('authService');
+const isAuthenticated = ref<boolean>(false);
 
 function saveDaysToLocalStorage() {
   localStorage.setItem('unregisteredCalendar', JSON.stringify(days.value));
@@ -99,15 +104,45 @@ function toggleDay(id: string) {
   }
 }
 
+function openDialog() {
+  dialog.value = true;
+}
+
 function goToRegister() {
   router.push({ name: 'Auth' });
 }
 
-function saveCalendarName() {
+function viewCalendars() {
+  router.push({ name: 'UserCalendars' });
+}
+
+function clearError() {
+  calendarNameErrorMessages.value = [];
+}
+
+async function saveCalendarName() {
+  if (!inputCalendarName.value) {
+    calendarNameErrorMessages.value = ['Calendar Name is required'];
+    return; // Do not submit if the field is empty
+  }
   if (form.value.validate()) {
-    localStorage.setItem('calendarName', inputCalendarName.value as string);
-    calendarName.value = inputCalendarName.value; // Update calendarName after saving
-    dialog.value = false;
+    if (isAuthenticated.value && authService?.getCurrentUser()) {
+      try {
+        const token = await (authService?.getCurrentUser() as ApplicationUser).getIdToken();
+        const response = await axios.post('/api/calendars/create', { name: inputCalendarName.value }, {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
+        router.push(`/calendar/${response.data.calendar._id}`);
+      } catch (error) {
+        console.error("Error creating calendar:", error);
+      }
+    } else {
+      localStorage.setItem('calendarName', inputCalendarName.value);
+      calendarName.value = inputCalendarName.value;
+      dialog.value = false;
+    }
   }
 }
 
@@ -125,7 +160,9 @@ function fetchDays() {
   return { days: days.value, calendarName: calendarName.value };
 }
 
-onMounted(() => {
+onMounted(async () => {
   checkCalendarName();
+  await authService?.getAuthState();
+  isAuthenticated.value = authService?.isAuthenticated() ?? false;
 });
 </script>
