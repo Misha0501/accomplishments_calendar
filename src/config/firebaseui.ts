@@ -37,7 +37,8 @@ async function transferCalendarData(user: firebase.User): Promise<string | null>
 const uiConfig: firebaseui.auth.Config = {
   signInSuccessUrl: '/', // Redirect to home after sign in
   signInOptions: [
-    firebase.auth.EmailAuthProvider.PROVIDER_ID
+    firebase.auth.EmailAuthProvider.PROVIDER_ID,
+    firebase.auth.GoogleAuthProvider.PROVIDER_ID
   ],
   signInFlow: 'popup',
   credentialHelper: firebaseui.auth.CredentialHelper.NONE,
@@ -68,7 +69,6 @@ const uiConfig: firebaseui.auth.Config = {
         return true
       }
     }
-
   },
   tosUrl: '', // URL for Terms of Service
   privacyPolicyUrl: '' // URL for Privacy Policy
