@@ -1,13 +1,13 @@
 <template>
   <v-container class="max-w-screen-md mx-auto p-4">
-    <div class="text-h5 text-center my-4">
+    <div class="text-h4 text-center my-2">
       {{ calendarName ?? props.initialCalendarName }}
     </div>
     <!-- Outer container with Vuetify's grid setup -->
     <v-row>
       <template v-for="(day, index) in days" :key="index">
         <!-- Month header only on the first day of the month, using Vuetify's grid -->
-        <v-col v-if="isNewMonth(day.date)" cols="12" class="text-h4 text-center my-2">
+        <v-col v-if="isNewMonth(day.date)" cols="12" class="text-h5 text-center mt-4">
           {{ monthName(day.date) }}
         </v-col>
         <!-- Day boxes -->
