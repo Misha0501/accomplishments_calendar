@@ -1,8 +1,15 @@
 <template>
-  <v-container>
+  <v-container fluid>
     <v-row>
-      <v-col cols="3">
-        <v-navigation-drawer app permanent>
+      <!-- Navigation for larger screens -->
+      <v-col class="d-none d-md-block" cols="12" md="3">
+        <v-navigation-drawer
+          v-model="drawer"
+          app
+          permanent
+          hide-overlay
+          class="v-navigation-drawer--close"
+        >
           <v-list dense>
             <v-list-item-group v-model="selectedItem">
               <v-list-item
@@ -18,7 +25,28 @@
           </v-list>
         </v-navigation-drawer>
       </v-col>
-      <v-col cols="9">
+      <!-- Navigation for smaller screens -->
+      <v-col class="d-md-none" cols="12">
+        <v-toolbar dense flat>
+          <v-tabs
+            v-model="selectedItem"
+            show-arrows
+            align-with-title
+            background-color="primary"
+            grow
+            dark
+          >
+            <v-tab
+              v-for="(item, index) in items"
+              :key="index"
+              @click="navigateTo(item.route)"
+            >
+              {{ item.title }}
+            </v-tab>
+          </v-tabs>
+        </v-toolbar>
+      </v-col>
+      <v-col cols="12" md="9">
         <router-view></router-view>
       </v-col>
     </v-row>
@@ -39,6 +67,7 @@ const items = [
 ];
 
 const selectedItem = ref(0);
+const drawer = ref(true);
 
 const navigateTo = (route) => {
   if (route === '/logout') {
@@ -55,8 +84,13 @@ const logout = async () => {
 };
 </script>
 
-<style scoped>
+<style>
 .v-navigation-drawer {
   height: 100vh;
 }
+
+.v-main {
+  padding-left: 0;
+}
+
 </style>
