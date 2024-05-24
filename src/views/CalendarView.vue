@@ -1,7 +1,7 @@
 <template>
   <CalendarComponent
     :initialDays="days"
-    :initialCalendarName="calendarName"
+    :initialCalendarName="calendarName ?? ''"
     :fetchDaysFn="fetchDays"
     :toggleDayFn="toggleDay"
   />
