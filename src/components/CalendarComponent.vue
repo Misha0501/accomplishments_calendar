@@ -11,7 +11,7 @@
           {{ monthName(day.date) }}
         </v-col>
         <!-- Day boxes -->
-        <v-col cols="1">
+        <v-col cols="4" sm="2" md="1">
           <v-btn :color="day.isActive ? 'green' : 'grey lighten-1'" block text @click="() => toggleDay(day._id)">
             {{ day.day }}
           </v-btn>
